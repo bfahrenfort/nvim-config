@@ -8,9 +8,9 @@ local config = {
 
   -- Configure AstroNvim updates
   updater = {
-    remote = "upstream", -- remote to use
+    -- remote = "upstream", -- remote to use
     channel = "stable", -- "stable" or "nightly"
-    version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
+    version = "v3.*", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
     branch = "main", -- branch name (NIGHTLY ONLY)
     commit = nil, -- commit hash (NIGHTLY ONLY)
     pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
@@ -62,15 +62,6 @@ local config = {
       heirline_bufferline = false, -- enable new heirline based bufferline (requires :PackerSync after changing)
     },
   },
-  -- If you need more control, you can use the function()...end notation
-  -- options = function(local_vim)
-  --   local_vim.opt.relativenumber = true
-  --   local_vim.g.mapleader = " "
-  --   local_vim.opt.whichwrap = vim.opt.whichwrap - { 'b', 's' } -- removing option from list
-  --   local_vim.opt.shortmess = vim.opt.shortmess + { I = true } -- add to option list
-  --
-  --   return local_vim
-  -- end,
 
   -- Set dashboard header
   header = {
@@ -188,17 +179,17 @@ local config = {
     -- Add overrides for LSP server settings, the keys are the name of the server
     ["server-settings"] = {
       -- example for addings schemas to yamlls
-      -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
-      --   settings = {
-      --     yaml = {
-      --       schemas = {
-      --         ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
-      --         ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-      --         ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
-      --       },
-      --     },
-      --   },
-      -- },
+      yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
+        settings = {
+          yaml = {
+            schemas = {
+              ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
+              ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
+              ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
+            },
+          },
+        },
+      },
 --      clangd = {
 --        capabilities = {
 --          offsetEncoding = "utf-8", -- Peter, don't turn me into a permanent error!
@@ -207,15 +198,10 @@ local config = {
     },
   },
 
-  -- Mapping data with "desc" stored directly by vim.keymap.set().
-  --
-  -- Please use this mappings table to set keyboard mapping since this is the
-  -- lower level configuration and more robust one. (which-key will
-  -- automatically pick-up stored data by this setting.)
   mappings = {
-    -- first key is the mode
     n = {
-      -- second key is the lefthand side of the map
+      ["<leader>T"] = { name = "+Coding Commands" },
+      ["<leader>m"] = { name = "+Markdown Commands" },
       -- mappings seen under group name "Buffer"
       ["<leader>bb"] = { "<cmd>tabnew<cr>", desc = "New tab" },
       ["<leader>bc"] = { "<cmd>BufferLinePickClose<cr>", desc = "Pick to close" },
@@ -245,55 +231,22 @@ local config = {
 
   -- Configure plugins
   plugins = {
-    init = {
-      -- You can disable default plugins as follows:
-      -- ["goolord/alpha-nvim"] = { disable = true },
-
-      -- You can also add new plugins here as well:
-      -- Add plugins, the packer syntax without the "use"
-      { "andweeb/presence.nvim" },
-      {
-        "catppuccin/nvim",
-        as = "catppuccin",
-        compile_path = vim.fn.stdpath "cache" .. "/catppuccin",
-      },
---      { "dart-lang/dart-vim-plugin" },
---      {
---        "akinsho/flutter-tools.nvim",
---        requires = "nvim-lua/plenary.nvim",
---        setup = function() flutter_path = "C:\\tools\\flutter\\bin\\flutter.bat" end,
---      },
---      {
---        "p00f/clangd_extensions.nvim",
---      },
-      {
-        "iamcco/markdown-preview.nvim",
-        run = "cd app && npm install",
-        setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
-        ft = { "markdown" },
-      },
-      {
-        "aca/marp.nvim",
-      },
-      -- {
-      --   "ray-x/lsp_signature.nvim",
-      --   event = "BufRead",
-      --   config = function()
-      --     require("lsp_signature").setup()
-      --   end,
-      -- },
-
-      -- We also support a key value style plugin definition similar to NvChad:
-      -- ["ray-x/lsp_signature.nvim"] = {
-      --   event = "BufRead",
-      --   config = function()
-      --     require("lsp_signature").setup()
-      --   end,
-      -- },
+    -- You can disable default plugins as follows:
+    -- ["goolord/alpha-nvim"] = { disable = true },
+    { "andweeb/presence.nvim" },
+    {
+      "catppuccin/nvim",
+      as = "catppuccin",
+      compile_path = vim.fn.stdpath "cache" .. "/catppuccin",
+      "iamcco/markdown-preview.nvim",
+      run = "cd app && npm install",
+      setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
+      ft = { "markdown" },
     },
-    -- All other entries override the require("<key>").setup({...}) call for default plugins
+    {
+      "aca/marp.nvim",
+    },
     ["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
-      -- config variable is the default configuration table for the setup function call
       local null_ls = require "null-ls"
 
       -- Check supported formatters and linters
@@ -333,9 +286,9 @@ local config = {
       return config -- return final config table
     end,
 
---    telescope = {
---      extensions = { "flutter" },
---    },
+--  telescope = {
+--    extensions = { "flutter" },
+--  },
     treesitter = { -- overrides `require("treesitter").setup(...)`
       ensure_installed = { "lua" },
     },
@@ -408,25 +361,7 @@ local config = {
     -- },
   },
 
-  -- Modify which-key registration (Use this with mappings table in the above.)
-  ["which-key"] = {
-    -- Add bindings which show up as group name
-    register = {
-      -- first key is the mode, n == normal mode
-      n = {
-        -- second key is the prefix, <leader> prefixes
-        ["<leader>"] = {
-          -- third key is the key to bring up next level and its displayed
-          -- group name in which-key top level menu
-          ["b"] = { name = "Buffer" },
-          ["T"] = { name = "+Coding Commands" },
-          ["m"] = { name = "+Markdown Commands" },
-        },
-      },
-    },
-  },
-
-  -- This function is run last and is a good place to configuring
+    -- This function is run last and is a good place to configuring
   -- augroups/autocommands and custom filetypes also this just pure lua so
   -- anything that doesn't fit in the normal config locations above can go here
   polish = function()
