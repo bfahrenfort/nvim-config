@@ -179,17 +179,29 @@ local config = {
     -- Add overrides for LSP server settings, the keys are the name of the server
     ["server-settings"] = {
       -- example for addings schemas to yamlls
-      yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
-        settings = {
-          yaml = {
-            schemas = {
-              ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
-              ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-              ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
-            },
-          },
-        },
-      },
+      -- FIXED moved to polish
+      -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
+      --   settings = {
+      --     yaml = {
+      --       schemaStore = {
+      --         -- You must disable built-in schemaStore support if you want to use
+      --         -- this plugin and its advanced options like `ignore`.
+      --         enable = false,
+      --         -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+      --         url = "",
+      --       },
+      --       schemas = require('schemastore').yaml.schemas(),
+      --     },
+      --   },
+      -- },
+      -- jsonls = {
+      --   settings = {
+      --     json = {
+      --       schemas = require('schemastore').json.schemas(),
+      --       validate = { enable = true },
+      --     },
+      --   },
+      -- }, 
 --      clangd = {
 --        capabilities = {
 --          offsetEncoding = "utf-8", -- Peter, don't turn me into a permanent error!
@@ -233,6 +245,7 @@ local config = {
   plugins = {
     -- You can disable default plugins as follows:
     -- ["goolord/alpha-nvim"] = { disable = true },
+    { "b0o/schemastore.nvim" },
     { "andweeb/presence.nvim" },
     {
       "catppuccin/nvim",
@@ -316,7 +329,16 @@ local config = {
     -- Configure luasnip loaders (vscode, lua, and/or snipmate)
     vscode = {
       -- Add paths for including more VS Code style snippets in luasnip
-      paths = {},
+      paths = {
+        "/usr/share/codium/resources/app/extensions/typescript-basics/snippets/typescript.code-snippets",
+        "/usr/share/codium/resources/app/extensions/java/snippets/java.code-snippets",
+        "/usr/share/codium/resources/app/extensions/cpp/snippets/c.code-snippets",
+        "/usr/share/codium/resources/app/extensions/cpp/snippets/cpp.code-snippets",
+        "/usr/share/codium/resources/app/extensions/javascript/snippets/javascript.code-snippets",
+        "/usr/share/codium/resources/app/extensions/markdown-basics/snippets/markdown.code-snippets",
+        "/usr/share/codium/resources/app/extensions/html/snippets/html.code-snippets",
+        "~/.vscode-oss/extensions/jeffersonqin.latex-snippets-jeff-1.2.3-universal/snippets/latex.json",
+      },
     },
   },
 
@@ -365,6 +387,8 @@ local config = {
   -- augroups/autocommands and custom filetypes also this just pure lua so
   -- anything that doesn't fit in the normal config locations above can go here
   polish = function()
+    -- vim.lsp.set_log_level("debug")
+
     -- Set key binding
     -- Set autocommands
     vim.api.nvim_create_augroup("packer_conf", { clear = true })
@@ -383,7 +407,7 @@ local config = {
 
     vim.diagnostic.config { update_in_insert = false }
     vim.opt.shell = "zsh"
-    vim.opt.shellcmdflag = ""
+    vim.opt.shellcmdflag = "-c"
 
     -- Set up custom filetypes
     -- vim.filetype.add {
