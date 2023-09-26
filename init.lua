@@ -167,13 +167,13 @@ local config = {
 
     -- override the mason server-registration function
     server_registration = function(server, opts)
---      if server == "clangd" then
---        require("clangd_extensions").setup {
---          server = opts,
---        }
---      else
---        require("lspconfig")[server].setup(opts)
---      end
+     if server == "clangd" then
+       require("clangd_extensions").setup {
+         server = opts,
+       }
+     else
+       require("lspconfig")[server].setup(opts)
+     end
     end,
 
     -- Add overrides for LSP server settings, the keys are the name of the server
@@ -275,7 +275,7 @@ local config = {
         vim.lsp.buf.format {
           filter = function(client)
             -- apply whatever logic you want (in this example, we'll only use null-ls)
-            if vim.bo.filetype == "lua" then return client.name == "null-ls" end
+            if vim.bo.filetype == "lua" then return client.name == "lua_ls" end
             if vim.bo.filetype == "cpp" then return client.name == "clangd" end
             return true
           end,
