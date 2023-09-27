@@ -219,6 +219,10 @@ local config = {
       ["<leader>bc"] = { "<cmd>BufferLinePickClose<cr>", desc = "Pick to close" },
       ["<leader>bj"] = { "<cmd>BufferLinePick<cr>", desc = "Pick to jump" },
       ["<leader>bt"] = { "<cmd>BufferLineSortByTabs<cr>", desc = "Sort by tabs" },
+      ["<leader>bh"] = { "<cmd>bprev<cr>", desc = "Previous buffer" },
+      ["H"] = { "<cmd>bprev<cr>", desc = "Previous buffer" },
+      ["<leader>bl"] = { "<cmd>bnext<cr>", desc = "Next buffer" },
+      ["L"] = { "<cmd>bnext<cr>", desc = "Next buffer" },
 
       -- Markdown stuff
       ["<leader>mm"] = { "<cmd>MarkdownPreview<cr>", desc = "Start Markdown Preview" },
@@ -299,6 +303,56 @@ local config = {
       return config -- return final config table
     end,
 
+    { -- override nvim-cmp plugin
+      "hrsh7th/nvim-cmp",
+      -- override the options table that is used in the `require("cmp").setup()` call
+      opts = function(_, opts)
+        -- opts parameter is the default options table
+        -- the function is lazy loaded so cmp is able to be required
+        local has_words_before = function()
+          unpack = unpack or table.unpack
+          local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+          return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+        end
+
+        local cmp = require "cmp"
+        local luasnip = require "luasnip"
+        -- modify the mapping part of the table
+        -- opts.mapping["<C-x>"] = cmp.madpping.select_next_item()
+        opts.mapping["<Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() and not luasnip.jumpable(1) then
+            cmp.select_next_item()
+          -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable() 
+          -- they way you will only jump inside the snippet region
+          elseif luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          elseif has_words_before() then
+            cmp.complete()
+          else
+            fallback()
+          end
+        end, { "i", "s" })
+        -- opts.mapping["<C-Tab>"] = cmp.mapping(function(fallback)
+        --   if cmp.visible() then
+        --     cmp.select_next_item()
+        --   else
+        --     fallback()
+        --   end
+        -- end, { "i", "s" })
+        opts.mapping["<S-Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() and not luasnip.jumpable(-1) then
+            cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { "i", "s" })
+
+        -- return the new table to be used
+        return opts
+      end,
+    },
 --  telescope = {
 --    extensions = { "flutter" },
 --  },
