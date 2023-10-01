@@ -246,18 +246,27 @@ local config = {
   },
 
   -- Configure plugins
+  -- READ THE DOCS YOU IDIOT https://github.com/folke/lazy.nvim#-plugin-spec
   plugins = {
     -- You can disable default plugins as follows:
     -- ["goolord/alpha-nvim"] = { disable = true },
     { "b0o/schemastore.nvim" },
+    { "hrsh7th/cmp-nvim-lua", },
+    {
+      "tamago324/cmp-zsh",
+      opts = {
+          zshrc = true,
+          filetypes = { "zsh", "zshrc", "zshenv", "zprofile" }
+      }
+    },
     { "andweeb/presence.nvim" },
     {
       "catppuccin/nvim",
-      as = "catppuccin",
+      name = "catppuccin",
       compile_path = vim.fn.stdpath "cache" .. "/catppuccin",
       "iamcco/markdown-preview.nvim",
       run = "cd app && npm install",
-      setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
+      init = function() vim.g.mkdp_filetypes = { "markdown" } end,
       ft = { "markdown" },
     },
     {
@@ -305,19 +314,32 @@ local config = {
 
     { -- override nvim-cmp plugin
       "hrsh7th/nvim-cmp",
+      dependencies = { "cmp-zsh", "cmp-nvim-lua" },
       -- override the options table that is used in the `require("cmp").setup()` call
       opts = function(_, opts)
         -- opts parameter is the default options table
         -- the function is lazy loaded so cmp is able to be required
+        local cmp = require "cmp"
+        local luasnip = require "luasnip"
+
+        -- sources
+        opts.sources = cmp.config.sources {
+          { name = "zsh", priority = 1000 },
+          { name = "nvim_lua", priority = 1000 },
+          { name = "nvim_lsp", priority = 999 },
+          { name = "luasnip", priority = 750 },
+          { name = "buffer", priority = 500 },
+          { name = "path", priority = 250 },
+        }
+
+        -- Keybind nonsense
         local has_words_before = function()
           unpack = unpack or table.unpack
           local line, col = unpack(vim.api.nvim_win_get_cursor(0))
           return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
         end
 
-        local cmp = require "cmp"
-        local luasnip = require "luasnip"
-        -- modify the mapping part of the table
+       -- modify the mapping part of the table
         -- opts.mapping["<C-x>"] = cmp.madpping.select_next_item()
         opts.mapping["<CR>"] = cmp.mapping(function(fallback)
           if cmp.visible() and cmp.get_active_entry() then
