@@ -141,14 +141,13 @@ local config = {
         allow_filetypes = { -- enable format on save for specified filetypes only
           -- "go",
           "lua",
---          "cpp",
+          --          "cpp",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
           -- "python",
         },
       },
       disabled = { -- disable formatting capabilities for the listed language servers
-        "sumneko_lua",
       },
       timeout_ms = 1000, -- default format timeout
       -- filter = function(client) -- fully override the default formatting function
@@ -167,13 +166,13 @@ local config = {
 
     -- override the mason server-registration function
     server_registration = function(server, opts)
-     if server == "clangd" then
-       require("clangd_extensions").setup {
-         server = opts,
-       }
-     else
-       require("lspconfig")[server].setup(opts)
-     end
+      if server == "clangd" then
+        require("clangd_extensions").setup {
+          server = opts,
+        }
+      else
+        require("lspconfig")[server].setup(opts)
+      end
     end,
 
     -- Add overrides for LSP server settings, the keys are the name of the server
@@ -201,12 +200,12 @@ local config = {
       --       validate = { enable = true },
       --     },
       --   },
-      -- }, 
---      clangd = {
---        capabilities = {
---          offsetEncoding = "utf-8", -- Peter, don't turn me into a permanent error!
---        },
---      },
+      -- },
+      --      clangd = {
+      --        capabilities = {
+      --          offsetEncoding = "utf-8", -- Peter, don't turn me into a permanent error!
+      --        },
+      --      },
     },
   },
 
@@ -251,27 +250,68 @@ local config = {
     -- You can disable default plugins as follows:
     -- ["goolord/alpha-nvim"] = { disable = true },
     { "b0o/schemastore.nvim" },
-    { "hrsh7th/cmp-nvim-lua", },
+    { "hrsh7th/cmp-nvim-lua" },
     {
       "tamago324/cmp-zsh",
       opts = {
-          zshrc = true,
-          filetypes = { "zsh", "zshrc", "zshenv", "zprofile" }
-      }
+        zshrc = true,
+        filetypes = { "zsh", "zshrc", "zshenv", "zprofile" },
+      },
     },
     { "andweeb/presence.nvim" },
+    {
+      "HiPhish/rainbow-delimiters.nvim",
+      name = "rainbow-delimiters",
+      config = function()
+        local rainbow_delimiters = require "rainbow-delimiters"
+        vim.g.rainbow_delimiters = {
+          strategy = {
+            [""] = rainbow_delimiters.strategy["global"],
+            commonlisp = rainbow_delimiters.strategy["local"],
+          },
+          query = {
+            [""] = "rainbow-delimiters",
+            lua = "rainbow-blocks",
+          },
+          highlight = {
+            "RainbowDelimiterRed",
+            "RainbowDelimiterYellow",
+            "RainbowDelimiterBlue",
+            "RainbowDelimiterOrange",
+            "RainbowDelimiterGreen",
+            "RainbowDelimiterViolet",
+            "RainbowDelimiterCyan",
+          },
+          blacklist = { "c", "cpp" },
+        }
+      end,
+    },
     {
       "catppuccin/nvim",
       name = "catppuccin",
       compile_path = vim.fn.stdpath "cache" .. "/catppuccin",
+      opts = {
+        integrations = {
+          notify = true,
+          mason = true,
+          which_key = true,
+        },
+        term_colors = true,
+      },
+      dependencies = { "rainbow-delimiters" },
+    },
+    {
       "iamcco/markdown-preview.nvim",
-      run = "cd app && npm install",
+      build = "cd app && npm install",
       init = function() vim.g.mkdp_filetypes = { "markdown" } end,
       ft = { "markdown" },
     },
     {
       "aca/marp.nvim",
     },
+
+    -- OVERRRIDES for default plugins
+
     ["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
       local null_ls = require "null-ls"
 
@@ -336,17 +376,17 @@ local config = {
         local has_words_before = function()
           unpack = unpack or table.unpack
           local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-          return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+          return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match "%s" == nil
         end
 
-       -- modify the mapping part of the table
+        -- modify the mapping part of the table
         -- opts.mapping["<C-x>"] = cmp.madpping.select_next_item()
         opts.mapping["<CR>"] = cmp.mapping(function(fallback)
           if cmp.visible() and cmp.get_active_entry() then
-           cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-         else
-           fallback()
-         end
+            cmp.confirm { behavior = cmp.ConfirmBehavior.Replace, select = false }
+          else
+            fallback()
+          end
         end, { "i", "s" })
         opts.mapping["<Esc>"] = cmp.mapping(function(fallback)
           if cmp.visible() and cmp.get_active_entry() then
@@ -366,13 +406,6 @@ local config = {
             fallback()
           end
         end, { "i", "s" })
-        -- opts.mapping["<C-Tab>"] = cmp.mapping(function(fallback)
-        --   if cmp.visible() then
-        --     cmp.select_next_item()
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" })
         opts.mapping["<S-Tab>"] = cmp.mapping(function(fallback)
           if cmp.visible() and not luasnip.jumpable(-1) then
             cmp.select_prev_item()
@@ -383,15 +416,13 @@ local config = {
           end
         end, { "i", "s" })
 
-        -- return the new table to be used
         return opts
       end,
     },
-
     {
       "rebelot/heirline.nvim",
       opts = function(_, opts)
-        local status = require("astronvim.utils.status")
+        local status = require "astronvim.utils.status"
         opts.statusline = {
           -- default highlight for the entire statusline
           hl = { fg = "fg", bg = "bg" },
@@ -496,19 +527,17 @@ local config = {
           },
         }
 
-        -- return the final options table
         return opts
       end,
     },
---  telescope = {
---    extensions = { "flutter" },
---  },
+    --  telescope = {
+    --    extensions = { "flutter" },
+    --  },
     treesitter = { -- overrides `require("treesitter").setup(...)`
       ensure_installed = { "lua" },
     },
     -- use mason-lspconfig to configure LSP installations
     ["mason-lspconfig"] = { -- overrides `require("mason-lspconfig").setup(...)`
-      ensure_installed = { "sumneko_lua" },
     },
     -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
     ["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
@@ -592,7 +621,7 @@ local config = {
     },
   },
 
-    -- This function is run last and is a good place to configuring
+  -- This function is run last and is a good place to configuring
   -- augroups/autocommands and custom filetypes also this just pure lua so
   -- anything that doesn't fit in the normal config locations above can go here
   polish = function()
@@ -634,6 +663,9 @@ local config = {
     vim.g.did_load_filetypes = false
     vim.g.dart_format_on_save = 1
     -- vim.o.autochdir = true
+
+    -- Had to do it to em
+    vim.fn.setenv("NVIM_CONFIG", "~/.config/nvim/lua/user/init.lua")
   end,
 }
 
