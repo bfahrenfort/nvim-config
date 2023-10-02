@@ -82,8 +82,8 @@ local config = {
   default_theme = {
     -- Modify the color palette for the default theme
     colors = {
-      fg = "#abb2bf",
-      bg = "#1e222a",
+      -- fg = "#abb2bf",
+      -- bg = "#1e222a",
     },
     highlights = function(hl) -- or a function that returns a new table of colors to set
       local C = require "default_theme.colors"
@@ -237,6 +237,9 @@ local config = {
       },
       -- quick save
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
+
+      -- Trouble
+      ["<leader>do"] = { "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" }, -- change description but the same command
     },
     t = {
       -- setting a mapping to false will disable it
@@ -250,6 +253,14 @@ local config = {
     -- You can disable default plugins as follows:
     -- ["goolord/alpha-nvim"] = { disable = true },
     { "b0o/schemastore.nvim" },
+    {
+      "folke/trouble.nvim",
+      dependencies = { "nvim-tree/nvim-web-devicons" },
+    },
+    {
+      "folke/todo-comments.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+    },
     { "hrsh7th/cmp-nvim-lua" },
     {
       "tamago324/cmp-zsh",
