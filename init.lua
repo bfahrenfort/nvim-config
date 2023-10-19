@@ -379,35 +379,8 @@ local config = {
         end
 
         -- modify the mapping part of the table
-        opts.mapping["<C-K>"] = cmp.mapping(function(fallback)
-          if luasnip.expandable() then
-            luasnip.expand()
-          else
-            fallback()
-          end
-        end, { "i" })
-        opts.mapping["C-L"] = cmp.mapping(function(fallback)
-          if luasnip.jumpable() then
-            luasnip.jump(1)
-          else
-            fallback()
-          end
-        end, { "i", "s" })
-        opts.mapping["C-J"] = cmp.mapping(function(fallback)
-          if luasnip.jumpable(-1) then
-            luasnip.jump(-1)
-          else
-            fallback()
-          end
-        end, { "i", "s" })
-        opts.mapping["C-E"] = cmp.mapping(function(fallback)
-          if luasnip.choice_active() then
-            luasnip.change_choice(1)
-          else
-            fallback()
-          end
-        end, { "i", "s" })
 
+        -- My custom
         opts.mapping["<Up>"] = cmp.mapping(function(fallback)
           cmp.abort()
           fallback()
@@ -416,6 +389,40 @@ local config = {
           cmp.abort()
           fallback()
         end, { "i", "s" })
+
+        -- luasnip suggested
+        -- icky
+        opts.mapping["<Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
+          -- that way you will only jump inside the snippet region
+          elseif luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          elseif has_words_before() then
+            cmp.complete()
+          else
+            fallback()
+          end
+        end, { "i", "s" })
+        opts.mapping["<S-Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { "i", "s" })
+        opts.mapping["<Esc>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.abort()
+          else
+            fallback()
+          end
+        end, { "i" })
+
+        -- Previous custom attempt: Uncomfy
         -- opts.mapping["<Tab>"] = cmp.mapping(function(fallback)
         -- if luasnip.jumpable() and not cmp.get_active_entry() then
         --   luasnip.jump()
@@ -444,6 +451,35 @@ local config = {
         -- end
         -- end, { "i", "s" })
 
+        -- cmp suggested: doesn't work
+        -- opts.mapping["<C-K>"] = cmp.mapping(function(fallback)
+        --   if luasnip.expandable() then
+        --     luasnip.expand()
+        --   else
+        --     fallback()
+        --   end
+        -- end, { "i" })
+        -- opts.mapping["C-L"] = cmp.mapping(function(fallback)
+        --   if luasnip.jumpable() then
+        --     luasnip.jump(1)
+        --   else
+        --     fallback()
+        --   end
+        -- end, { "i", "s" })
+        -- opts.mapping["C-J"] = cmp.mapping(function(fallback)
+        --   if luasnip.jumpable(-1) then
+        --     luasnip.jump(-1)
+        --   else
+        --     fallback()
+        --   end
+        -- end, { "i", "s" })
+        -- opts.mapping["C-E"] = cmp.mapping(function(fallback)
+        --   if luasnip.choice_active() then
+        --     luasnip.change_choice(1)
+        --   else
+        --     fallback()
+        --   end
+        -- end, { "i", "s" })
         return opts
       end,
     },
