@@ -140,7 +140,7 @@ local config = {
         enabled = true, -- enable or disable format on save globally
         allow_filetypes = { -- enable format on save for specified filetypes only
           -- "go",
-          "lua",
+          -- "lua",
           --          "cpp",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
@@ -155,11 +155,31 @@ local config = {
       -- end
     },
     -- easily add or disable built in mappings added during LSP attaching
-    mappings = {
-      n = {
-        -- ["<leader>lf"] = false -- disable formatting keymap
-      },
-    },
+    -- mappings = function(maps)
+    --   local ht = require "haskell-tools"
+    --   local bufnr = vim.api.nvim_get_current_buf()
+    --   local def_opts = { noremap = true, silent = true, buffer = bufnr }
+    --   local haskellMaps = {
+    --     n = {
+    --       -- ["<leader>lf"] = false -- disable formatting keymap
+    --       ["<leader>ca"] = { vim.lsp.codelens.run, def_opts },
+    --       ["<leader>hs"] = { ht.hoogle.hoogle_signature, def_opts },
+    --       ["<leader>ea"] = { ht.lsp.buf_eval_all, def_opts },
+    --       ["<leader>rr"] = { ht.repl.toggle, def_opts },
+    --       ["<leader>rf"] = {
+    --         function() ht.repl.toggle(vim.api.nvim_buf_get_name(0)) end,
+    --         def_opts,
+    --       },
+    --       ["<leader>rq"] = { ht.repl.quit },
+    --     },
+    --   }
+    --   local haskellFiletypes = { "haskell", "lhaskell", "cabal", "cabalproject" }
+    --   if vim.bo.filetype == "haskell" then
+    --     return haskellMaps
+    --   else
+    --     return maps
+    --   end
+    -- end,
     -- add to the global LSP on_attach function
     -- on_attach = function(client, bufnr)
     -- end,
@@ -175,44 +195,33 @@ local config = {
       end
     end,
 
-    -- Add overrides for LSP server settings, the keys are the name of the server
-    ["server-settings"] = {
-      -- example for addings schemas to yamlls
-      -- FIXED moved to polish
-      -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
-      --   settings = {
-      --     yaml = {
-      --       schemaStore = {
-      --         -- You must disable built-in schemaStore support if you want to use
-      --         -- this plugin and its advanced options like `ignore`.
-      --         enable = false,
-      --         -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-      --         url = "",
-      --       },
-      --       schemas = require('schemastore').yaml.schemas(),
-      --     },
-      --   },
-      -- },
-      -- jsonls = {
-      --   settings = {
-      --     json = {
-      --       schemas = require('schemastore').json.schemas(),
-      --       validate = { enable = true },
-      --     },
-      --   },
-      -- },
-      --      clangd = {
-      --        capabilities = {
-      --          offsetEncoding = "utf-8", -- Peter, don't turn me into a permanent error!
-      --        },
-      --      },
+    config = {
+      ["rust-analyzer"] = {
+        check = {
+          command = "clippy", -- Doesn't work :/
+        },
+        checkOnSave = true,
+        cachePriming = {
+          enable = false,
+        },
+      },
+      clangd = { capabilities = { offsetEncoding = { "utf-16" } } },
+    },
+    setup_handlers = {
+      -- add custom handler
+      rust_analyzer = function(_, opts) require("rust-tools").setup { server = opts } end,
     },
   },
 
   mappings = {
     n = {
+      -- Disables
+      ["<leader>h"] = false,
+
+      -- Groups
       ["<leader>T"] = { name = "+Coding Commands" },
       ["<leader>m"] = { name = "+Markdown Commands" },
+
       -- mappings seen under group name "Buffer"
       ["<leader>bb"] = { "<cmd>tabnew<cr>", desc = "New tab" },
       ["<leader>bc"] = { "<cmd>BufferLinePickClose<cr>", desc = "Pick to close" },
@@ -226,7 +235,7 @@ local config = {
       -- Markdown stuff
       ["<leader>mm"] = { "<cmd>MarkdownPreview<cr>", desc = "Start Markdown Preview" },
       ["<leader>mo"] = {
-        "<cmd>lua require('marp.nvim').ServerStart()<cr><cmd>!Start-Process \"http://localhost:8080/%\"<cr><cr>",
+        "<cmd>lua require('marp.nvim').ServerStart()<cr>", --<cmd>!gnome-open \"http://localhost:8080/%\"<cr><cr>",
         desc = "Start Marp server",
       },
       ["<leader>mc"] = { "<cmd>lua require('marp.nvim').ServerStop()<cr>", desc = "Stop Marp server" },
@@ -252,14 +261,13 @@ local config = {
   plugins = {
     -- You can disable default plugins as follows:
     -- ["goolord/alpha-nvim"] = { disable = true },
+
+    -- Snippets etc
     { "b0o/schemastore.nvim" },
+
     {
       "folke/trouble.nvim",
       dependencies = { "nvim-tree/nvim-web-devicons" },
-    },
-    {
-      "folke/todo-comments.nvim",
-      dependencies = { "nvim-lua/plenary.nvim" },
     },
     { "hrsh7th/cmp-nvim-lua" },
     {
@@ -269,7 +277,16 @@ local config = {
         filetypes = { "zsh", "zshrc", "zshenv", "zprofile" },
       },
     },
-    { "andweeb/presence.nvim" },
+
+    -- Misc
+    {
+      "folke/todo-comments.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+    },
+    {
+      "andweeb/presence.nvim",
+      lazy = false,
+    },
     {
       "HiPhish/rainbow-delimiters.nvim",
       name = "rainbow-delimiters",
@@ -311,6 +328,8 @@ local config = {
       },
       dependencies = { "rainbow-delimiters" },
     },
+
+    -- Languages & filetypes
     {
       "iamcco/markdown-preview.nvim",
       build = "cd app && npm install",
@@ -319,53 +338,22 @@ local config = {
     },
     {
       "aca/marp.nvim",
+      ft = { "markdown" },
+    },
+    "simrat39/rust-tools.nvim",
+    {
+      "mrcjkb/haskell-tools.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+      version = "^2", -- Recommended
+      ft = { "haskell", "lhaskell", "cabal", "cabalproject" },
     },
 
     -- OVERRRIDES for default plugins
-
-    ["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
-      local null_ls = require "null-ls"
-
-      -- Check supported formatters and linters
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
-      config.sources = {
-        -- Set a formatter
-        null_ls.builtins.formatting.stylua,
-        -- null_ls.builtins.formatting.prettier,
-      }
-
-      local lsp_formatting = function(bufnr)
-        vim.lsp.buf.format {
-          filter = function(client)
-            -- apply whatever logic you want (in this example, we'll only use null-ls)
-            if vim.bo.filetype == "lua" then return client.name == "lua_ls" end
-            if vim.bo.filetype == "cpp" then return client.name == "clangd" end
-            return true
-          end,
-          bufnr = bufnr,
-        }
-      end
-
-      -- if you want to set up formatting on save, you can use this as a callback
-      local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-      -- set up null-ls's on_attach function
-      config.on_attach = function(client, bufnr)
-        if client.supports_method "textDocument/formatting" then
-          vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            group = augroup,
-            buffer = bufnr,
-            callback = function() lsp_formatting(bufnr) end,
-          })
-        end
-      end
-      return config -- return final config table
-    end,
-
-    { -- override nvim-cmp plugin
+    {
       "hrsh7th/nvim-cmp",
-      dependencies = { "cmp-zsh", "cmp-nvim-lua" },
+      dependencies = { "cmp-zsh", "cmp-nvim-lua", "cmp-nvim-lsp" },
       -- override the options table that is used in the `require("cmp").setup()` call
       opts = function(_, opts)
         -- opts parameter is the default options table
@@ -391,41 +379,70 @@ local config = {
         end
 
         -- modify the mapping part of the table
-        -- opts.mapping["<C-x>"] = cmp.madpping.select_next_item()
-        opts.mapping["<CR>"] = cmp.mapping(function(fallback)
-          if cmp.visible() and cmp.get_active_entry() then
-            cmp.confirm { behavior = cmp.ConfirmBehavior.Replace, select = false }
+        opts.mapping["<C-K>"] = cmp.mapping(function(fallback)
+          if luasnip.expandable() then
+            luasnip.expand()
+          else
+            fallback()
+          end
+        end, { "i" })
+        opts.mapping["C-L"] = cmp.mapping(function(fallback)
+          if luasnip.jumpable() then
+            luasnip.jump(1)
           else
             fallback()
           end
         end, { "i", "s" })
-        opts.mapping["<Esc>"] = cmp.mapping(function(fallback)
-          if cmp.visible() and cmp.get_active_entry() then
-            cmp.abort()
-          else
-            fallback()
-          end
-        end, { "i", "s" })
-        opts.mapping["<Tab>"] = cmp.mapping(function(fallback)
-          if luasnip.expand_or_jumpable() and not cmp.visible() then
-            luasnip.expand_or_jump()
-          elseif cmp.visible() then
-            cmp.select_next_item()
-          elseif has_words_before() then
-            cmp.complete()
-          else
-            fallback()
-          end
-        end, { "i", "s" })
-        opts.mapping["<S-Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() and not luasnip.jumpable(-1) then
-            cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then
+        opts.mapping["C-J"] = cmp.mapping(function(fallback)
+          if luasnip.jumpable(-1) then
             luasnip.jump(-1)
           else
             fallback()
           end
         end, { "i", "s" })
+        opts.mapping["C-E"] = cmp.mapping(function(fallback)
+          if luasnip.choice_active() then
+            luasnip.change_choice(1)
+          else
+            fallback()
+          end
+        end, { "i", "s" })
+
+        opts.mapping["<Up>"] = cmp.mapping(function(fallback)
+          cmp.abort()
+          fallback()
+        end, { "i", "s" })
+        opts.mapping["<Down>"] = cmp.mapping(function(fallback)
+          cmp.abort()
+          fallback()
+        end, { "i", "s" })
+        -- opts.mapping["<Tab>"] = cmp.mapping(function(fallback)
+        -- if luasnip.jumpable() and not cmp.get_active_entry() then
+        --   luasnip.jump()
+        -- elseif cmp.visible() then
+        --   cmp.select_next_item()
+        -- elseif has_words_before() then
+        --   cmp.complete()
+        -- else
+        --   fallback()
+        -- end
+        -- end, { "i", "s" })
+        -- opts.mapping["<S-Enter>"] = cmp.mapping(function(fallback)
+        -- if luasnip.jumpable(-1) then
+        --   luasnip.jump(-1)
+        -- else
+        --   fallback()
+        -- end
+        -- end, { "i", "s" })
+        -- opts.mapping["<S-Tab>"] = cmp.mapping(function(fallback)
+        -- if cmp.visible() and cmp.get_selected_entry() and not luasnip.jumpable(-1) then
+        --   cmp.select_prev_item()
+        -- elseif luasnip.jumpable(-1) then
+        --   luasnip.jump(-1)
+        -- else
+        --   fallback()
+        -- end
+        -- end, { "i", "s" })
 
         return opts
       end,
@@ -649,10 +666,8 @@ local config = {
     })
 
     -- On buffer open, change cwd
-    vim.api.nvim_create_autocmd("FileReadPost", { command = "cd %:h" })
-    vim.api.nvim_create_autocmd("BufReadPost", { command = "cd %:h" })
-    -- vim.cmd("Neotree")
-    -- vim.cmd('call timer_start(1, { -> execute( "wincmd l") })')
+    -- vim.api.nvim_create_autocmd("filereadpost", { command = "cd %:h" })
+    -- vim.api.nvim_create_autocmd("BufReadPost", { command = "cd %:h" })
 
     vim.diagnostic.config { update_in_insert = false }
     vim.opt.shell = "zsh"
