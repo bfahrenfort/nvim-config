@@ -38,31 +38,6 @@ local config = {
     -- },
   },
 
-  -- set vim options here (vim.<first_key>.<second_key> = value)
-  options = {
-    opt = {
-      -- set to true or false etc.
-      relativenumber = true, -- sets vim.opt.relativenumber
-      number = true, -- sets vim.opt.number
-      spell = false, -- sets vim.opt.spell
-      colorcolumn = "81",
-      shiftwidth = 2,
-      signcolumn = "auto", -- sets vim.opt.signcolumn to auto
-      wrap = false, -- sets vim.opt.wrap
-    },
-    g = {
-      mapleader = " ", -- sets vim.g.mapleader
-      autoformat_enabled = true, -- enable or disable auto formatting at start (lsp.formatting.format_on_save must be enabled)
-      cmp_enabled = true, -- enable completion at start
-      autopairs_enabled = true, -- enable autopairs at start
-      diagnostics_enabled = true, -- enable diagnostics at start
-      status_diagnostics_enabled = true, -- enable diagnostics in statusline
-      icons_enabled = true, -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
-      ui_notifications_enabled = true, -- disable notifications when toggling UI elements
-      heirline_bufferline = true, -- enable new heirline based bufferline (requires :PackerSync after changing)
-    },
-  },
-
   -- Set dashboard header
   header = {
     " █████  ███████ ████████ ██████   ██████",
@@ -124,24 +99,20 @@ local config = {
 
   -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
   diagnostics = {
-    virtual_text = true,
+    virtual_text = false,
     underline = true,
   },
 
   -- Extend LSP configuration
   lsp = {
-    -- enable servers that you already have installed without mason
-    servers = {
-      -- "pyright"
-    },
     formatting = {
       -- control auto formatting on save
       format_on_save = {
         enabled = true, -- enable or disable format on save globally
         allow_filetypes = { -- enable format on save for specified filetypes only
-          -- "go",
-          -- "lua",
-          --          "cpp",
+          "lua",
+          "cpp",
+          "rust",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
           -- "python",
@@ -155,31 +126,19 @@ local config = {
       -- end
     },
     -- easily add or disable built in mappings added during LSP attaching
-    -- mappings = function(maps)
-    --   local ht = require "haskell-tools"
-    --   local bufnr = vim.api.nvim_get_current_buf()
-    --   local def_opts = { noremap = true, silent = true, buffer = bufnr }
-    --   local haskellMaps = {
-    --     n = {
-    --       -- ["<leader>lf"] = false -- disable formatting keymap
-    --       ["<leader>ca"] = { vim.lsp.codelens.run, def_opts },
-    --       ["<leader>hs"] = { ht.hoogle.hoogle_signature, def_opts },
-    --       ["<leader>ea"] = { ht.lsp.buf_eval_all, def_opts },
-    --       ["<leader>rr"] = { ht.repl.toggle, def_opts },
-    --       ["<leader>rf"] = {
-    --         function() ht.repl.toggle(vim.api.nvim_buf_get_name(0)) end,
-    --         def_opts,
-    --       },
-    --       ["<leader>rq"] = { ht.repl.quit },
-    --     },
-    --   }
-    --   local haskellFiletypes = { "haskell", "lhaskell", "cabal", "cabalproject" }
-    --   if vim.bo.filetype == "haskell" then
-    --     return haskellMaps
-    --   else
-    --     return maps
-    --   end
-    -- end,
+    mappings = function(maps)
+      local bufnr = vim.api.nvim_get_current_buf()
+      local def_opts = { noremap = true, silent = true, buffer = bufnr }
+      if vim.bo.filetype == "rust" then
+        local rt = require "rust-tools"
+        maps.n["<leader>hr"] = { "<cmd>RustRun<cr>", desc = "Run project", def_opts }
+        maps.n["<leader>hR"] = { "<cmd>RustRunnables<cr>", desc = "Select runnable", def_opts }
+        maps.n["<leader>hh"] = { rt.hover_actions.hover_actions, def_opts }
+        maps.n["<leader>hc"] = { rt.open_cargo_toml.open_cargo_toml, def_opts }
+        maps.n["<leader>ha"] = { rt.code_action_group.code_action_group, def_opts }
+      end
+      return maps
+    end,
     -- add to the global LSP on_attach function
     -- on_attach = function(client, bufnr)
     -- end,
@@ -196,419 +155,59 @@ local config = {
     end,
 
     config = {
-      ["rust-analyzer"] = {
-        check = {
-          command = "clippy", -- Doesn't work :/
+      rust_analyzer = {
+        settings = {
+          ["rust-analyzer"] = {
+            check = {
+              command = "clippy", -- Doesn't work :/
+            },
+            checkOnSave = true,
+            cachePriming = {
+              enable = false,
+            },
+          },
         },
-        checkOnSave = true,
-        cachePriming = {
-          enable = false,
+        on_attach = function(_, bufnr)
+          local rt = require "rust-tools"
+          local wk = require "which-key"
+          wk.register({
+            h = {
+              name = "Rust commands",
+              r = { "<cmd>RustRun<cr>", "Run project" },
+              R = { "<cmd>RustRunnables<cr>", "Select runnable" },
+              -- c = { ht.project.open_project_file, "Open yaml/cabal" },
+              -- h = ,
+              -- a = ,
+            },
+          }, { prefix = "<leader>", buffer = bufnr })
+          -- maps.n["<leader>hr"] = { "<cmd>RustRun<cr>", desc = "Run project", def_opts }
+          -- maps.n["<leader>hR"] = { "<cmd>RustRunnables<cr>", desc = "Select runnable", def_opts }
+          -- maps.n["<leader>hh"] = { rt.hover_actions.hover_actions, def_opts }
+          -- maps.n["<leader>hc"] = { rt.open_cargo_toml.open_cargo_toml, def_opts }
+          -- maps.n["<leader>ha"] = { rt.code_action_group.code_action_group, def_opts }
+        end,
+      },
+      clangd = {
+        capabilities = { offsetEncoding = { "utf-16" } },
+      },
+      volar = {
+        filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
+        init_options = {
+          typescript = {
+            tsdk = "/usr/local/lib/node_modules/typescript/lib/",
+          },
         },
       },
-      clangd = { capabilities = { offsetEncoding = { "utf-16" } } },
+      hls = {
+        capabilities = function(opts)
+          local lsr = require "lsp-selection-range"
+          return lsr.update_capabilities(opts)
+        end,
+      },
     },
     setup_handlers = {
       -- add custom handler
       rust_analyzer = function(_, opts) require("rust-tools").setup { server = opts } end,
-    },
-  },
-
-  mappings = {
-    n = {
-      -- Disables
-      ["<leader>h"] = false,
-
-      -- Groups
-      ["<leader>T"] = { name = "+Coding Commands" },
-      ["<leader>m"] = { name = "+Markdown Commands" },
-
-      -- mappings seen under group name "Buffer"
-      ["<leader>bb"] = { "<cmd>tabnew<cr>", desc = "New tab" },
-      ["<leader>bc"] = { "<cmd>BufferLinePickClose<cr>", desc = "Pick to close" },
-      ["<leader>bj"] = { "<cmd>BufferLinePick<cr>", desc = "Pick to jump" },
-      ["<leader>bt"] = { "<cmd>BufferLineSortByTabs<cr>", desc = "Sort by tabs" },
-      ["<leader>bh"] = { "<cmd>bprev<cr>", desc = "Previous buffer" },
-      ["H"] = { "<cmd>bprev<cr>", desc = "Previous buffer" },
-      ["<leader>bl"] = { "<cmd>bnext<cr>", desc = "Next buffer" },
-      ["L"] = { "<cmd>bnext<cr>", desc = "Next buffer" },
-
-      -- Markdown stuff
-      ["<leader>mm"] = { "<cmd>MarkdownPreview<cr>", desc = "Start Markdown Preview" },
-      ["<leader>mo"] = {
-        "<cmd>lua require('marp.nvim').ServerStart()<cr>", --<cmd>!gnome-open \"http://localhost:8080/%\"<cr><cr>",
-        desc = "Start Marp server",
-      },
-      ["<leader>mc"] = { "<cmd>lua require('marp.nvim').ServerStop()<cr>", desc = "Stop Marp server" },
-
-      ["<C-w>"] = { -- IMPORTANT! WINCMD DOES NOT WORK FROM THIS NOW.
-        "<cmd>bp<bar>sp<bar>bn<bar>bd<CR>",
-        desc = "close the current buffer, and open a new one if it was the last one",
-      },
-      -- quick save
-      ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
-
-      -- Trouble
-      ["<leader>do"] = { "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" }, -- change description but the same command
-    },
-    t = {
-      -- setting a mapping to false will disable it
-      -- ["<esc>"] = false,
-    },
-  },
-
-  -- Configure plugins
-  -- READ THE DOCS YOU IDIOT https://github.com/folke/lazy.nvim#-plugin-spec
-  plugins = {
-    -- You can disable default plugins as follows:
-    -- ["goolord/alpha-nvim"] = { disable = true },
-
-    -- Snippets etc
-    { "b0o/schemastore.nvim" },
-
-    {
-      "folke/trouble.nvim",
-      dependencies = { "nvim-tree/nvim-web-devicons" },
-    },
-    { "hrsh7th/cmp-nvim-lua" },
-    {
-      "tamago324/cmp-zsh",
-      opts = {
-        zshrc = true,
-        filetypes = { "zsh", "zshrc", "zshenv", "zprofile" },
-      },
-    },
-
-    -- Misc
-    {
-      "folke/todo-comments.nvim",
-      dependencies = { "nvim-lua/plenary.nvim" },
-    },
-    {
-      "andweeb/presence.nvim",
-      lazy = false,
-    },
-    {
-      "HiPhish/rainbow-delimiters.nvim",
-      name = "rainbow-delimiters",
-      config = function()
-        local rainbow_delimiters = require "rainbow-delimiters"
-        vim.g.rainbow_delimiters = {
-          strategy = {
-            [""] = rainbow_delimiters.strategy["global"],
-            commonlisp = rainbow_delimiters.strategy["local"],
-          },
-          query = {
-            [""] = "rainbow-delimiters",
-            lua = "rainbow-blocks",
-          },
-          highlight = {
-            "RainbowDelimiterRed",
-            "RainbowDelimiterYellow",
-            "RainbowDelimiterBlue",
-            "RainbowDelimiterOrange",
-            "RainbowDelimiterGreen",
-            "RainbowDelimiterViolet",
-            "RainbowDelimiterCyan",
-          },
-          blacklist = { "c", "cpp" },
-        }
-      end,
-    },
-    {
-      "catppuccin/nvim",
-      name = "catppuccin",
-      compile_path = vim.fn.stdpath "cache" .. "/catppuccin",
-      opts = {
-        integrations = {
-          notify = true,
-          mason = true,
-          which_key = true,
-        },
-        term_colors = true,
-      },
-      dependencies = { "rainbow-delimiters" },
-    },
-
-    -- Languages & filetypes
-    {
-      "iamcco/markdown-preview.nvim",
-      build = "cd app && npm install",
-      init = function() vim.g.mkdp_filetypes = { "markdown" } end,
-      ft = { "markdown" },
-    },
-    {
-      "aca/marp.nvim",
-      ft = { "markdown" },
-    },
-    "simrat39/rust-tools.nvim",
-    {
-      "mrcjkb/haskell-tools.nvim",
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-      },
-      version = "^2", -- Recommended
-      ft = { "haskell", "lhaskell", "cabal", "cabalproject" },
-    },
-
-    -- OVERRRIDES for default plugins
-    {
-      "hrsh7th/nvim-cmp",
-      dependencies = { "cmp-zsh", "cmp-nvim-lua", "cmp-nvim-lsp" },
-      -- override the options table that is used in the `require("cmp").setup()` call
-      opts = function(_, opts)
-        -- opts parameter is the default options table
-        -- the function is lazy loaded so cmp is able to be required
-        local cmp = require "cmp"
-        local luasnip = require "luasnip"
-
-        -- sources
-        opts.sources = cmp.config.sources {
-          { name = "zsh", priority = 1000 },
-          { name = "nvim_lua", priority = 1000 },
-          { name = "nvim_lsp", priority = 999 },
-          { name = "luasnip", priority = 750 },
-          { name = "buffer", priority = 500 },
-          { name = "path", priority = 250 },
-        }
-
-        -- Keybind nonsense
-        local has_words_before = function()
-          unpack = unpack or table.unpack
-          local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-          return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match "%s" == nil
-        end
-
-        -- modify the mapping part of the table
-
-        -- My custom
-        opts.mapping["<Up>"] = cmp.mapping(function(fallback)
-          cmp.abort()
-          fallback()
-        end, { "i", "s" })
-        opts.mapping["<Down>"] = cmp.mapping(function(fallback)
-          cmp.abort()
-          fallback()
-        end, { "i", "s" })
-
-        -- luasnip suggested
-        -- icky
-        opts.mapping["<Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_next_item()
-          -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
-          -- that way you will only jump inside the snippet region
-          elseif luasnip.expand_or_jumpable() then
-            luasnip.expand_or_jump()
-          elseif has_words_before() then
-            cmp.complete()
-          else
-            fallback()
-          end
-        end, { "i", "s" })
-        opts.mapping["<S-Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then
-            luasnip.jump(-1)
-          else
-            fallback()
-          end
-        end, { "i", "s" })
-        opts.mapping["<Esc>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.abort()
-          else
-            fallback()
-          end
-        end, { "i" })
-
-        -- Previous custom attempt: Uncomfy
-        -- opts.mapping["<Tab>"] = cmp.mapping(function(fallback)
-        -- if luasnip.jumpable() and not cmp.get_active_entry() then
-        --   luasnip.jump()
-        -- elseif cmp.visible() then
-        --   cmp.select_next_item()
-        -- elseif has_words_before() then
-        --   cmp.complete()
-        -- else
-        --   fallback()
-        -- end
-        -- end, { "i", "s" })
-        -- opts.mapping["<S-Enter>"] = cmp.mapping(function(fallback)
-        -- if luasnip.jumpable(-1) then
-        --   luasnip.jump(-1)
-        -- else
-        --   fallback()
-        -- end
-        -- end, { "i", "s" })
-        -- opts.mapping["<S-Tab>"] = cmp.mapping(function(fallback)
-        -- if cmp.visible() and cmp.get_selected_entry() and not luasnip.jumpable(-1) then
-        --   cmp.select_prev_item()
-        -- elseif luasnip.jumpable(-1) then
-        --   luasnip.jump(-1)
-        -- else
-        --   fallback()
-        -- end
-        -- end, { "i", "s" })
-
-        -- cmp suggested: doesn't work
-        -- opts.mapping["<C-K>"] = cmp.mapping(function(fallback)
-        --   if luasnip.expandable() then
-        --     luasnip.expand()
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i" })
-        -- opts.mapping["C-L"] = cmp.mapping(function(fallback)
-        --   if luasnip.jumpable() then
-        --     luasnip.jump(1)
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" })
-        -- opts.mapping["C-J"] = cmp.mapping(function(fallback)
-        --   if luasnip.jumpable(-1) then
-        --     luasnip.jump(-1)
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" })
-        -- opts.mapping["C-E"] = cmp.mapping(function(fallback)
-        --   if luasnip.choice_active() then
-        --     luasnip.change_choice(1)
-        --   else
-        --     fallback()
-        --   end
-        -- end, { "i", "s" })
-        return opts
-      end,
-    },
-    {
-      "rebelot/heirline.nvim",
-      opts = function(_, opts)
-        local status = require "astronvim.utils.status"
-        opts.statusline = {
-          -- default highlight for the entire statusline
-          hl = { fg = "fg", bg = "bg" },
-          -- each element following is a component in astronvim.utils.status module
-
-          -- add the vim mode component
-          status.component.mode {
-            -- enable mode text with padding as well as an icon before it
-            mode_text = { icon = { kind = "VimIcon", padding = { right = 1, left = 1 } } },
-            -- surround the component with a separators
-            surround = {
-              -- it's a left element, so use the left separator
-              separator = "left",
-              -- set the color of the surrounding based on the current mode using astronvim.utils.status module
-              color = function() return { main = status.hl.mode_bg(), right = "blank_bg" } end,
-            },
-          },
-          -- we want an empty space here so we can use the component builder to make a new section with just an empty string
-          status.component.builder {
-            { provider = "" },
-            -- define the surrounding separator and colors to be used inside of the component
-            -- and the color to the right of the separated out section
-            surround = { separator = "left", color = { main = "blank_bg", right = "file_info_bg" } },
-          },
-          -- add a section for the currently opened file information
-          status.component.file_info {
-            -- enable the file_icon and disable the highlighting based on filetype
-            file_icon = { padding = { left = 0 } },
-            filename = { fallback = "Empty" },
-            -- add padding
-            padding = { right = 1 },
-            -- define the section separator
-            surround = { separator = "left", condition = false },
-          },
-          -- add a component for the current git branch if it exists and use no separator for the sections
-          status.component.git_branch { surround = { separator = "none" } },
-          -- add a component for the current git diff if it exists and use no separator for the sections
-          status.component.git_diff { padding = { left = 1 }, surround = { separator = "none" } },
-          -- fill the rest of the statusline
-          -- the elements after this will appear in the middle of the statusline
-          status.component.fill(),
-          -- add a component to display if the LSP is loading, disable showing running client names, and use no separator
-          status.component.lsp { lsp_client_names = false, surround = { separator = "none", color = "bg" } },
-          -- fill the rest of the statusline
-          -- the elements after this will appear on the right of the statusline
-          status.component.fill(),
-          -- add a component for the current diagnostics if it exists and use the right separator for the section
-          status.component.diagnostics { surround = { separator = "right" } },
-          -- add a component to display LSP clients, disable showing LSP progress, and use the right separator
-          status.component.lsp { lsp_progress = false, surround = { separator = "right" } },
-          -- NvChad has some nice icons to go along with information, so we can create a parent component to do this
-          -- all of the children of this table will be treated together as a single component
-          {
-            -- define a simple component where the provider is just a folder icon
-            status.component.builder {
-              -- astronvim.get_icon gets the user interface icon for a closed folder with a space after it
-              { provider = require("astronvim.utils").get_icon "FolderClosed" },
-              -- add padding after icon
-              padding = { right = 1 },
-              -- set the foreground color to be used for the icon
-              hl = { fg = "bg" },
-              -- use the right separator and define the background color
-              surround = { separator = "right", color = "folder_icon_bg" },
-            },
-            -- add a file information component and only show the current working directory name
-            status.component.file_info {
-              -- we only want filename to be used and we can change the fname
-              -- function to get the current working directory name
-              filename = { fname = function(nr) return vim.fn.getcwd(nr) end, padding = { left = 1 } },
-              -- disable all other elements of the file_info component
-              file_icon = false,
-              file_modified = false,
-              file_read_only = false,
-              -- use no separator for this part but define a background color
-              surround = { separator = "none", color = "file_info_bg", condition = false },
-            },
-          },
-          -- the final component of the NvChad statusline is the navigation section
-          -- this is very similar to the previous current working directory section with the icon
-          { -- make nav section with icon border
-            -- define a custom component with just a file icon
-            status.component.builder {
-              { provider = require("astronvim.utils").get_icon "ScrollText" },
-              -- add padding after icon
-              padding = { right = 1 },
-              -- set the icon foreground
-              hl = { fg = "bg" },
-              -- use the right separator and define the background color
-              -- as well as the color to the left of the separator
-              surround = { separator = "right", color = { main = "nav_icon_bg", left = "file_info_bg" } },
-            },
-            -- add a navigation component and just display the percentage of progress in the file
-            status.component.nav {
-              -- add some padding for the percentage provider
-              percentage = { padding = { right = 1 } },
-              -- disable all other providers
-              ruler = false,
-              scrollbar = false,
-              -- use no separator and define the background color
-              surround = { separator = "none", color = "file_info_bg" },
-            },
-          },
-        }
-
-        return opts
-      end,
-    },
-    --  telescope = {
-    --    extensions = { "flutter" },
-    --  },
-    treesitter = { -- overrides `require("treesitter").setup(...)`
-      ensure_installed = { "lua" },
-    },
-    -- use mason-lspconfig to configure LSP installations
-    ["mason-lspconfig"] = { -- overrides `require("mason-lspconfig").setup(...)`
-    },
-    -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
-    ["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
-      -- ensure_installed = { "prettier", "stylua" },
-    },
-    ["mason-nvim-dap"] = { -- overrides `require("mason-nvim-dap").setup(...)`
-      -- ensure_installed = { "python" },
     },
   },
 
@@ -684,7 +283,6 @@ local config = {
       },
     },
   },
-
   -- This function is run last and is a good place to configuring
   -- augroups/autocommands and custom filetypes also this just pure lua so
   -- anything that doesn't fit in the normal config locations above can go here
