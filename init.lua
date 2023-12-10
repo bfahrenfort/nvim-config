@@ -126,19 +126,7 @@ local config = {
       -- end
     },
     -- easily add or disable built in mappings added during LSP attaching
-    mappings = function(maps)
-      local bufnr = vim.api.nvim_get_current_buf()
-      local def_opts = { noremap = true, silent = true, buffer = bufnr }
-      if vim.bo.filetype == "rust" then
-        local rt = require "rust-tools"
-        maps.n["<leader>hr"] = { "<cmd>RustRun<cr>", desc = "Run project", def_opts }
-        maps.n["<leader>hR"] = { "<cmd>RustRunnables<cr>", desc = "Select runnable", def_opts }
-        maps.n["<leader>hh"] = { rt.hover_actions.hover_actions, def_opts }
-        maps.n["<leader>hc"] = { rt.open_cargo_toml.open_cargo_toml, def_opts }
-        maps.n["<leader>ha"] = { rt.code_action_group.code_action_group, def_opts }
-      end
-      return maps
-    end,
+    -- mappings = function(maps) return maps end,
     -- add to the global LSP on_attach function
     -- on_attach = function(client, bufnr)
     -- end,
@@ -159,7 +147,7 @@ local config = {
         settings = {
           ["rust-analyzer"] = {
             check = {
-              command = "clippy", -- Doesn't work :/
+              command = "clippy",
             },
             checkOnSave = true,
             cachePriming = {
@@ -167,25 +155,6 @@ local config = {
             },
           },
         },
-        on_attach = function(_, bufnr)
-          local rt = require "rust-tools"
-          local wk = require "which-key"
-          wk.register({
-            h = {
-              name = "Rust commands",
-              r = { "<cmd>RustRun<cr>", "Run project" },
-              R = { "<cmd>RustRunnables<cr>", "Select runnable" },
-              -- c = { ht.project.open_project_file, "Open yaml/cabal" },
-              -- h = ,
-              -- a = ,
-            },
-          }, { prefix = "<leader>", buffer = bufnr })
-          -- maps.n["<leader>hr"] = { "<cmd>RustRun<cr>", desc = "Run project", def_opts }
-          -- maps.n["<leader>hR"] = { "<cmd>RustRunnables<cr>", desc = "Select runnable", def_opts }
-          -- maps.n["<leader>hh"] = { rt.hover_actions.hover_actions, def_opts }
-          -- maps.n["<leader>hc"] = { rt.open_cargo_toml.open_cargo_toml, def_opts }
-          -- maps.n["<leader>ha"] = { rt.code_action_group.code_action_group, def_opts }
-        end,
       },
       clangd = {
         capabilities = { offsetEncoding = { "utf-16" } },

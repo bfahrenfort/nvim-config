@@ -3,7 +3,6 @@ return {
     -- Disables
     ["<C-f>"] = false,
     ["<leader>h"] = false,
-    ["<leader>h"] = { name = "Filetype Commands" },
 
     -- Groups
     ["<leader>T"] = { name = "Coding Commands" },
@@ -23,6 +22,12 @@ return {
     H = {
       function() require("astronvim.utils.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
       desc = "Previous buffer",
+    },
+    J = {
+      "<PageDown>",
+    },
+    K = {
+      "<PageUp>",
     },
 
     -- Markdown stuff

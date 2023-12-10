@@ -110,13 +110,17 @@ return {
     config = function(_, opts)
       local rt = require "rust-tools"
       local wk = require "which-key"
-      local bufnr = vim.api.nvim_get_current_buf()
 
       wk.register({
         h = {
           name = "Rust commands",
+          r = { "<cmd>RustRun<cr>", "Run" },
+          R = { "<cmd>RustRunnables<cr>", "Select runnable" },
+          h = { "<cmd>RustHoverActions<cr>", "Hover Actions" },
+          c = { "<cmd>RustOpenCargo<cr>", "Open Cargo.toml" },
+          a = { "<cmd>RustCodeAction<cr>", "Code Actions" },
         },
-      }, { prefix = "<leader>", buffer = bufnr })
+      }, { prefix = "<leader>" })
     end,
   },
   {
@@ -139,7 +143,25 @@ return {
           r = { ht.repl.toggle, "Toggle REPL for current package" },
           c = { ht.project.open_project_file, "Open yaml/cabal" },
         },
-      }, { prefix = "<leader>", buffer = bufnr })
+      }, { prefix = "<leader>" })
+    end,
+  },
+  {
+    "p00f/clangd_extensions.nvim", -- install lsp plugin
+    init = function(_)
+      -- load clangd extensions when clangd attaches
+      local augroup = vim.api.nvim_create_augroup("clangd_extensions", { clear = true })
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = augroup,
+        desc = "Load clangd_extensions with clangd",
+        callback = function(args)
+          if assert(vim.lsp.get_client_by_id(args.data.client_id)).name == "clangd" then
+            require "clangd_extensions"
+            -- add more `clangd` setup here as needed such as loading autocmds
+            vim.api.nvim_del_augroup_by_id(augroup) -- delete auto command since it only needs to happen once
+          end
+        end,
+      })
     end,
   },
 }
