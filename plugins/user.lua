@@ -23,6 +23,10 @@ return {
 
   -- Misc
   {
+    "lambdalisue/suda.vim",
+    lazy = false,
+  },
+  {
     "christoomey/vim-tmux-navigator",
     lazy = false,
   },
@@ -88,8 +92,54 @@ return {
     --   }
     -- end,
   },
+  {
+    "epwalsh/obsidian.nvim",
+    version = "*", -- recommended, use latest release instead of latest commit
+    lazy = true,
+    -- ft = "markdown",
+    -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+    event = {
+      -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+      "BufReadPre /home/b/Documents/Obsidian/Notes/**.md",
+      "BufNewFile /home/b/Documents/Obsidian/Notes/**.md",
+    },
+    dependencies = {
+      -- Required.
+      "nvim-lua/plenary.nvim",
+
+      -- see below for full list of optional dependencies 👇
+    },
+    opts = {
+      workspaces = {
+        {
+          name = "Notes",
+          path = "~/Documents/Obsidian/Notes",
+        },
+      },
+
+      -- see below for full list of options 👇
+    },
+  },
 
   -- Languages & filetypes
+  {
+    "esensar/nvim-dev-container",
+    lazy = false,
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {
+      attach_mounts = {
+        neovim_config = {
+          -- enables mounting local config to /root/.config/nvim in container
+          enabled = false,
+          -- makes mount readonly in container
+          options = { "readonly" },
+          custom_mounts = {
+            -- "type=bind,source=~/.config/nvim,target=/home/root/.config/nvim",
+          },
+        },
+      },
+    },
+  },
   {
     "iamcco/markdown-preview.nvim",
     build = "cd app && npm install",
