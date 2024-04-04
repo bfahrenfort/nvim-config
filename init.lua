@@ -113,6 +113,7 @@ local config = {
           "lua",
           "cpp",
           "rust",
+          "python",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
           -- "python",
@@ -151,7 +152,10 @@ local config = {
             },
             checkOnSave = true,
             cachePriming = {
-              enable = false,
+              enable = true,
+            },
+            diagnostics = {
+              styleLints = { enable = true },
             },
           },
         },
