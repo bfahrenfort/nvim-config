@@ -22,7 +22,6 @@ return {
 
         -- Groups
         ["<Leader>T"] = { desc = "Coding Commands" },
-        ["<Leader>m"] = { desc = "Markdown Commands" },
 
         -- mappings seen under group name "Buffer"
         ["<Leader>bb"] = { "<cmd>tabnew<cr>", desc = "New tab" },
@@ -32,11 +31,11 @@ return {
         ["<Leader>bh"] = { "<cmd>bprev<cr>", desc = "Previous buffer" },
         ["<Leader>bl"] = { "<cmd>bnext<cr>", desc = "Next buffer" },
         L = {
-          function() require("astronvim.utils.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
+          function() require("astrocore.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
           desc = "Next buffer",
         },
         H = {
-          function() require("astronvim.utils.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
+          function() require("astrocore.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
           desc = "Previous buffer",
         },
         J = {
@@ -45,14 +44,6 @@ return {
         K = {
           "<PageUp>",
         },
-
-        -- Markdown stuff
-        ["<Leader>mm"] = { "<cmd>MarkdownPreview<cr>", desc = "Start Markdown Preview" },
-        ["<Leader>mo"] = {
-          "<cmd>lua require('marp.nvim').ServerStart()<cr>", --<cmd>!gnome-open \"http://localhost:8080/%\"<cr><cr>",
-          desc = "Start Marp server",
-        },
-        ["<Leader>mc"] = { "<cmd>lua require('marp.nvim').ServerStop()<cr>", desc = "Stop Marp server" },
 
         ["<C-w>"] = { -- IMPORTANT! WINCMD DOES NOT WORK FROM THIS NOW.
           "<cmd>bp<bar>sp<bar>bn<bar>bd<CR>",
@@ -63,9 +54,6 @@ return {
 
         -- Trouble
         ["<Leader>do"] = { "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" }, -- change description but the same command
-
-        -- Tmux for some reason
-        ["<C-h>"] = { "<cmd>TmuxNavigateLeft<cr>" },
       },
       t = {
         -- setting a mapping to false will disable it
