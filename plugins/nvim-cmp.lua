@@ -1,3 +1,6 @@
+-- Override for nvim-cmp
+-- in its own file because LONG
+
 return {
   {
     "hrsh7th/nvim-cmp",

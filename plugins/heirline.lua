@@ -2,7 +2,7 @@ return {
   {
     "rebelot/heirline.nvim",
     opts = function(_, opts)
-      local status = require "astronvim.utils.status"
+      local status = require "astroui.status"
       opts.statusline = {
         -- default highlight for the entire statusline
         hl = { fg = "fg", bg = "bg" },
@@ -59,7 +59,7 @@ return {
           -- define a simple component where the provider is just a folder icon
           status.component.builder {
             -- astronvim.get_icon gets the user interface icon for a closed folder with a space after it
-            { provider = require("astronvim.utils").get_icon "FolderClosed" },
+            { provider = require("astroui").get_icon "FolderClosed" },
             -- add padding after icon
             padding = { right = 1 },
             -- set the foreground color to be used for the icon
@@ -85,7 +85,7 @@ return {
         { -- make nav section with icon border
           -- define a custom component with just a file icon
           status.component.builder {
-            { provider = require("astronvim.utils").get_icon "ScrollText" },
+            { provider = require("astroui").get_icon "ScrollText" },
             -- add padding after icon
             padding = { right = 1 },
             -- set the icon foreground
