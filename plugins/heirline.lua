@@ -32,6 +32,7 @@ return {
           -- enable the file_icon and disable the highlighting based on filetype
           file_icon = { padding = { left = 0 } },
           filename = { fallback = "Empty" },
+          filetype = false,
           -- add padding
           padding = { right = 1 },
           -- define the section separator
@@ -73,6 +74,7 @@ return {
             -- function to get the current working directory name
             filename = { fname = function(nr) return vim.fn.getcwd(nr) end, padding = { left = 1 } },
             -- disable all other elements of the file_info component
+            filetype = false,
             file_icon = false,
             file_modified = false,
             file_read_only = false,
