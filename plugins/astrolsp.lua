@@ -26,6 +26,7 @@ return {
           "cpp",
           "rust",
           "python",
+          "haskell",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
           -- "python",
@@ -75,12 +76,12 @@ return {
           },
         },
       },
-      hls = {
-        capabilities = function(opts)
-          local lsr = require "lsp-selection-range"
-          return lsr.update_capabilities(opts)
-        end,
-      },
+      -- hls = {
+      --   capabilities = function(opts)
+      --     local lsr = require "lsp-selection-range"
+      --     return lsr.update_capabilities(opts)
+      --   end,
+      -- },
     },
     -- customize how language servers are attached
     handlers = {
@@ -91,6 +92,11 @@ return {
       -- rust_analyzer = false, -- setting a handler to false will disable the set up of that language server
       -- pyright = function(_, opts) require("lspconfig").pyright.setup(opts) end -- or a custom handler function can be passed
       rust_analyzer = function(_, opts) require("rust-tools").setup { server = opts } end,
+      haskell_language_server = function(_, opts)
+        local lsr = require "lsp-selection-range"
+        opts.capabilities = lsr.update_capabilities(opts.capabilities)
+        require("hls").setup { server = opts }
+      end,
     },
     -- Configure buffer local auto commands to add when attaching a language server
     autocmds = {
