@@ -121,7 +121,11 @@ return {
   -- Languages & filetypes
   {
     "esensar/nvim-dev-container",
-    lazy = false,
+    cond = function()
+      local devcontainer = vim.fn.filereadable "./Dockerfile" == 1
+        or vim.fn.filereadable "./.devcontainer/Dockerfile" == 1
+      return devcontainer
+    end,
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = {
       attach_mounts = {
