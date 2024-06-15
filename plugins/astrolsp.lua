@@ -92,11 +92,35 @@ return {
       -- the key is the server that is being setup with `lspconfig`
       -- rust_analyzer = false, -- setting a handler to false will disable the set up of that language server
       -- pyright = function(_, opts) require("lspconfig").pyright.setup(opts) end -- or a custom handler function can be passed
-      rust_analyzer = function(_, opts) require("rust-tools").setup { server = opts } end,
+      rust_analyzer = function(_, opts)
+        local wk = require "which-key"
+
+        wk.register({
+          h = {
+            desc = "Rust commands",
+            r = { "<cmd>RustRun<cr>", "Run" },
+            R = { "<cmd>RustRunnables<cr>", "Select runnable" },
+            h = { "<cmd>RustHoverActions<cr>", "Hover Actions" },
+            c = { "<cmd>RustOpenCargo<cr>", "Open Cargo.toml" },
+            a = { "<cmd>RustCodeAction<cr>", "Code Actions" },
+          },
+        }, { prefix = "<Leader>" })
+      end,
       haskell_language_server = function(_, opts)
         local lsr = require "lsp-selection-range"
+        local ht = require "haskell-tools"
         opts.capabilities = lsr.update_capabilities(opts.capabilities)
-        require("hls").setup { server = opts }
+
+        local wk = require "which-key"
+
+        wk.register({
+          h = {
+            desc = "Haskell commands",
+            s = { ht.hoogle.hoogle_signature, "Hoogle Signature under Caret" },
+            r = { ht.repl.toggle, "Toggle REPL for current package" },
+            c = { ht.project.open_project_file, "Open yaml/cabal" },
+          },
+        }, { prefix = "<Leader>" })
       end,
     },
     -- Configure buffer local auto commands to add when attaching a language server

@@ -158,21 +158,7 @@ return {
         auto_focus = true,
       },
     },
-    config = function(_, opts)
-      local rt = require "rust-tools"
-      local wk = require "which-key"
-
-      wk.register({
-        h = {
-          name = "Rust commands",
-          r = { "<cmd>RustRun<cr>", "Run" },
-          R = { "<cmd>RustRunnables<cr>", "Select runnable" },
-          h = { "<cmd>RustHoverActions<cr>", "Hover Actions" },
-          c = { "<cmd>RustOpenCargo<cr>", "Open Cargo.toml" },
-          a = { "<cmd>RustCodeAction<cr>", "Code Actions" },
-        },
-      }, { prefix = "<leader>" })
-    end,
+    ft = { "rust" },
   },
   {
     "mrcjkb/haskell-tools.nvim",
@@ -182,20 +168,6 @@ return {
     },
     version = "^2", -- Recommended
     ft = { "haskell", "lhaskell", "cabal", "cabalproject" },
-    config = function(_, opts)
-      local ht = require "haskell-tools"
-      local wk = require "which-key"
-      local bufnr = vim.api.nvim_get_current_buf()
-
-      wk.register({
-        h = {
-          name = "Haskell commands",
-          s = { ht.hoogle.hoogle_signature, "Hoogle Signature under Caret" },
-          r = { ht.repl.toggle, "Toggle REPL for current package" },
-          c = { ht.project.open_project_file, "Open yaml/cabal" },
-        },
-      }, { prefix = "<leader>" })
-    end,
   },
   {
     "p00f/clangd_extensions.nvim", -- install lsp plugin
