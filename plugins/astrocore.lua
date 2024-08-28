@@ -62,7 +62,7 @@ return {
         ["<C-s>"] = { ":w!<cr>", desc = "Save File" }, -- change description but the same command
 
         -- Trouble
-        ["<Leader>do"] = { "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" }, -- change description but the same command
+        ["<Leader>do"] = { "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle Trouble" }, -- change description but the same command
 
         -- Tmux for some reason
         ["<C-h>"] = { "<cmd>TmuxNavigateLeft<cr>" },
