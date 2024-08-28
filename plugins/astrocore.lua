@@ -84,7 +84,10 @@ return {
         shell = "zsh",
         shellcmdflag = "-c",
       },
-      g = {},
+      g = {
+        vimtex_view_general_viewer = "okular",
+        vimtex_view_general_options = "--unique file:@pdf#src:@line@tex",
+      },
     },
     features = {
       autopairs = true,
