@@ -69,6 +69,7 @@ return {
         ["<C-h>"] = { "<cmd>TmuxNavigateLeft<cr>" },
       },
       t = {
+        ["<Esc>"] = { "<C-\\><C-n>" },
         -- setting a mapping to false will disable it
         -- ["<esc>"] = false,
       },
