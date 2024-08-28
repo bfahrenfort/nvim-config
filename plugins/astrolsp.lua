@@ -92,35 +92,11 @@ return {
       -- the key is the server that is being setup with `lspconfig`
       -- rust_analyzer = false, -- setting a handler to false will disable the set up of that language server
       -- pyright = function(_, opts) require("lspconfig").pyright.setup(opts) end -- or a custom handler function can be passed
-      rust_analyzer = function(_, opts)
-        local wk = require "which-key"
-
-        wk.register({
-          h = {
-            desc = "Rust commands",
-            r = { "<cmd>RustRun<cr>", "Run" },
-            R = { "<cmd>RustRunnables<cr>", "Select runnable" },
-            h = { "<cmd>RustHoverActions<cr>", "Hover Actions" },
-            c = { "<cmd>RustOpenCargo<cr>", "Open Cargo.toml" },
-            a = { "<cmd>RustCodeAction<cr>", "Code Actions" },
-          },
-        }, { prefix = "<Leader>" })
-      end,
+      -- rust_analyzer = function(server, opts)
+      --   require("lspconfig")[server].setup(opts) end,
       haskell_language_server = function(_, opts)
         local lsr = require "lsp-selection-range"
-        local ht = require "haskell-tools"
         opts.capabilities = lsr.update_capabilities(opts.capabilities)
-
-        local wk = require "which-key"
-
-        wk.register({
-          h = {
-            desc = "Haskell commands",
-            s = { ht.hoogle.hoogle_signature, "Hoogle Signature under Caret" },
-            r = { ht.repl.toggle, "Toggle REPL for current package" },
-            c = { ht.project.open_project_file, "Open yaml/cabal" },
-          },
-        }, { prefix = "<Leader>" })
       end,
     },
     -- Configure buffer local auto commands to add when attaching a language server
@@ -170,6 +146,24 @@ return {
     on_attach = function(client, bufnr)
       -- this would disable semanticTokensProvider for all clients
       -- client.server_capabilities.semanticTokensProvider = nil
+      local wk = require "which-key"
+
+      if client.name == "rust_analyzer" then
+        -- HEY SILLY
+        -- rust-tools configures on-attach, so this is moved to that plugin
+        -- opts.server.on_attach
+      elseif client.name == "hls" then
+        local ht = require "haskell-tools"
+
+        wk.register({
+          h = {
+            desc = "Haskell commands",
+            s = { ht.hoogle.hoogle_signature, "Hoogle Signature under Caret" },
+            r = { ht.repl.toggle, "Toggle REPL for current package" },
+            c = { ht.project.open_project_file, "Open yaml/cabal" },
+          },
+        }, { prefix = "<Leader>" })
+      end
     end,
     -- override the mason server-registration function
     server_registration = function(server, opts)

@@ -22,6 +22,7 @@ return {
 
         -- Groups
         ["<Leader>T"] = { desc = "Coding Commands" },
+        -- ["<Leader>h"] = { false, desc = "Language Commands" },
         ["<Leader>m"] = { desc = "Markdown Commands" },
 
         -- mappings seen under group name "Buffer"

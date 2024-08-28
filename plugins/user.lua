@@ -163,8 +163,23 @@ return {
   {
     "simrat39/rust-tools.nvim",
     opts = {
-      hover_actions = {
-        auto_focus = true,
+      server = {
+        on_attach = function(_, bufnr)
+          local wk = require "which-key"
+          wk.register({
+            h = {
+              desc = "Rust commands",
+              r = { "<cmd>RustRun<cr>", "Run" },
+              R = { "<cmd>RustRunnables<cr>", "Select runnable" },
+              h = { "<cmd>RustHoverActions<cr>", "Hover Actions" },
+              c = { "<cmd>RustOpenCargo<cr>", "Open Cargo.toml" },
+              a = { "<cmd>RustCodeAction<cr>", "Code Actions" },
+            },
+          }, { prefix = "<Leader>", buffer = bufnr })
+        end,
+        hover_actions = {
+          auto_focus = true,
+        },
       },
     },
     ft = { "rust" },
