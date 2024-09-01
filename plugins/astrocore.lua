@@ -85,7 +85,7 @@ return {
         -- },
       },
       t = {
-        ["<Esc>"] = { "<C-\\><C-n>" },
+        ["<Esc>"] = { "<C-\\><C-n>", noremap = true },
         -- setting a mapping to false will disable it
         -- ["<esc>"] = false,
       },
