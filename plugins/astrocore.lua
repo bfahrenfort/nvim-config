@@ -67,6 +67,7 @@ return {
 
         -- Tmux for some reason
         ["<C-h>"] = { "<cmd>TmuxNavigateLeft<cr>" },
+
         ["<Leader>;"] = {
           function() return "A;<esc>" end,
           noremap = true,
