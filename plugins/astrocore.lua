@@ -67,6 +67,22 @@ return {
 
         -- Tmux for some reason
         ["<C-h>"] = { "<cmd>TmuxNavigateLeft<cr>" },
+        ["<Leader>;"] = {
+          function() return "A;<esc>" end,
+          noremap = true,
+          silent = true,
+          expr = true,
+          desc = "insert semicolon at end of line",
+        },
+      },
+      i = {
+        -- ["<Leader>;"] = {
+        -- function() return vim.api.nvim_replace_termcodes("<esc>A;<esc>", true, true, true) end,
+        --  noremap = true,
+        --  silent = true,
+        --  expr = true,
+        --  desc = "insert semicolon at end of line",
+        -- },
       },
       t = {
         ["<Esc>"] = { "<C-\\><C-n>" },
