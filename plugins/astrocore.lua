@@ -106,6 +106,21 @@ return {
       g = {
         vimtex_view_general_viewer = "okular",
         vimtex_view_general_options = "--unique file:@pdf#src:@line@tex",
+        haskell_tools = {
+          hls = {
+            settings = {
+              haskell = {
+                plugin = {},
+              },
+            },
+            -- capabilities = function(opts)
+            --   local lsr = require "lsp-selection-range"
+            --   local caps = lsr.update_capabilities(opts)
+            --   return vim.list_extend(, { "textDocument/semanticTokens" })
+            -- end,
+            capabilities = { ["textDocument/semanticTokens"] = "full" },
+          },
+        },
       },
     },
     features = {
