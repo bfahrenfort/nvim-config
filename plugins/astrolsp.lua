@@ -46,6 +46,7 @@ return {
     servers = {
       -- "pyright"
       "gleam",
+      "hls",
     },
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
@@ -78,12 +79,7 @@ return {
           },
         },
       },
-      -- hls = {
-      --   capabilities = function(opts)
-      --     local lsr = require "lsp-selection-range"
-      --     return lsr.update_capabilities(opts)
-      --   end,
-      -- },
+      hls = nil, -- HEY SILLY IT'S IN ASTROCORE GLOBALS
     },
     -- customize how language servers are attached
     handlers = {
