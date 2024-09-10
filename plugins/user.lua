@@ -8,6 +8,7 @@ return {
     "folke/trouble.nvim",
     lazy = false,
     dependencies = { "nvim-tree/nvim-web-devicons" },
+    cmd = "Trouble",
   },
   { "hrsh7th/cmp-nvim-lua" },
   {
@@ -183,15 +184,16 @@ return {
     },
     ft = { "rust" },
   },
-  {
-    "mrcjkb/haskell-tools.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-lsp-selection-range",
-    },
-    version = "^2", -- Recommended
-    ft = { "haskell", "lhaskell", "cabal", "cabalproject" },
-  },
+  -- {
+  --   "mrcjkb/haskell-tools.nvim",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-lsp-selection-range",
+  --   },
+  --   version = "^4", -- Recommended
+  --   lazy = false,
+  --   -- ft = { "haskell", "lhaskell", "cabal", "cabalproject" },
+  -- },
   {
     "p00f/clangd_extensions.nvim", -- install lsp plugin
     init = function(_)
