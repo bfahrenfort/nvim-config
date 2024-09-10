@@ -14,7 +14,7 @@ return {
   --  telescope = {
   --    extensions = { "flutter" },
   --  },
-  
+
   {
     "L3MON4D3/luasnip",
     build = "make install_jsregexp",
@@ -23,19 +23,17 @@ return {
       -- add more custom luasnip configuration such as filetype extend or custom snippets
       local luasnip = require "luasnip"
       luasnip.filetype_extend("javascript", { "javascriptreact" })
-      
-      require("luasnip.loaders.from_vscode").lazy_load(
-        {
-          -- "/usr/share/codium/resources/app/extensions/typescript-basics/snippets/typescript.code-snippets",
-          -- "/usr/share/codium/resources/app/extensions/java/snippets/java.code-snippets",
-          -- "/usr/share/codium/resources/app/extensions/cpp/snippets/c.code-snippets",
-          -- "/usr/share/codium/resources/app/extensions/cpp/snippets/cpp.code-snippets",
-          -- "/usr/share/codium/resources/app/extensions/javascript/snippets/javascript.code-snippets",
-          -- "/usr/share/codium/resources/app/extensions/markdown-basics/snippets/markdown.code-snippets",
-          -- "/usr/share/codium/resources/app/extensions/html/snippets/html.code-snippets",
-          -- "~/.vscode-oss/extensions/jeffersonqin.latex-snippets-jeff-1.2.3-universal/snippets/latex.json",
-        }
-      )
+
+      require("luasnip.loaders.from_vscode").lazy_load {
+        -- "/usr/share/codium/resources/app/extensions/typescript-basics/snippets/typescript.code-snippets",
+        -- "/usr/share/codium/resources/app/extensions/java/snippets/java.code-snippets",
+        -- "/usr/share/codium/resources/app/extensions/cpp/snippets/c.code-snippets",
+        -- "/usr/share/codium/resources/app/extensions/cpp/snippets/cpp.code-snippets",
+        -- "/usr/share/codium/resources/app/extensions/javascript/snippets/javascript.code-snippets",
+        -- "/usr/share/codium/resources/app/extensions/markdown-basics/snippets/markdown.code-snippets",
+        -- "/usr/share/codium/resources/app/extensions/html/snippets/html.code-snippets",
+        -- "~/.vscode-oss/extensions/jeffersonqin.latex-snippets-jeff-1.2.3-universal/snippets/latex.json",
+      }
     end,
   },
 }
