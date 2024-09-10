@@ -117,5 +117,8 @@ return {
       large_buf = { size = 1024 * 500, lines = 10000 }, -- set global limits for large files for disabling features like treesitter
       highlighturl = true, -- highlight URLs at start
     },
+    rooter = {
+      autochdir = true,
+    },
   },
 }
