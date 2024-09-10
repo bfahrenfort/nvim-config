@@ -66,8 +66,7 @@ return {
     end,
   },
   {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    "catppuccin",
     compile_path = vim.fn.stdpath "cache" .. "/catppuccin",
     opts = {
       integrations = {
