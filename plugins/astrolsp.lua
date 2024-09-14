@@ -149,6 +149,8 @@ return {
         -- HEY SILLY
         -- rust-tools configures on-attach, so this is moved to that plugin
         -- opts.server.on_attach
+      elseif client.name == "gleam" then
+        client.server_capabilities.documentFormattingProvider = true
       elseif client.name == "hls" then
         local ht = require "haskell-tools"
 
@@ -167,6 +169,13 @@ return {
       if server == "clangd" then
         require("clangd_extensions").setup {
           server = opts,
+        }
+      elseif server == "gleam" then
+        require("lspconfig").gleam.setup {
+          cmd = { "gleam", "lsp" },
+          filetypes = { "gleam" },
+          root_dir = require("lspconfig").util.root_pattern "gleam.toml",
+          capabilities = require("user.lsp.handlers").capabilities,
         }
       else
         require("lspconfig")[server].setup(opts)
