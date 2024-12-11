@@ -27,6 +27,7 @@ return {
           "rust",
           "python",
           "haskell",
+          "typescript",
         },
         ignore_filetypes = { -- disable format on save for specified filetypes
           -- "python",
@@ -45,6 +46,7 @@ return {
     -- enable servers that you already have installed without mason
     servers = {
       -- "pyright"
+      ["rust-analyzer"] = { "rust" },
       "gleam",
       "hls",
     },
@@ -154,14 +156,12 @@ return {
       elseif client.name == "hls" then
         local ht = require "haskell-tools"
 
-        wk.register({
-          h = {
-            desc = "Haskell commands",
-            s = { ht.hoogle.hoogle_signature, "Hoogle Signature under Caret" },
-            r = { ht.repl.toggle, "Toggle REPL for current package" },
-            c = { ht.project.open_project_file, "Open yaml/cabal" },
-          },
-        }, { prefix = "<Leader>" })
+        wk.add {
+          { "<Leader>h>", buffer = bufnr, desc = "Haskell commands" },
+          { "<Leader>hs", ht.hoogle.hoogle_signature, buffer = bufnr, desc = "Hoogle signature under caret" },
+          { "<Leader>hr", ht.repl.toggle, buffer = bufnr, desc = "Toggle REPL" },
+          { "<Leader>hc", ht.project.open_project_file, buffer = bufnr, desc = "Open yaml/cabal" },
+        }
       end
     end,
     -- override the mason server-registration function

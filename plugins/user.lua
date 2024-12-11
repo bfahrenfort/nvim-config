@@ -160,28 +160,34 @@ return {
     end,
   },
   {
-    "simrat39/rust-tools.nvim",
-    opts = {
-      server = {
-        on_attach = function(_, bufnr)
-          local wk = require "which-key"
-          wk.register({
-            h = {
-              desc = "Rust commands",
-              r = { "<cmd>RustRun<cr>", "Run" },
-              R = { "<cmd>RustRunnables<cr>", "Select runnable" },
-              h = { "<cmd>RustHoverActions<cr>", "Hover Actions" },
-              c = { "<cmd>RustOpenCargo<cr>", "Open Cargo.toml" },
-              a = { "<cmd>RustCodeAction<cr>", "Code Actions" },
-            },
-          }, { prefix = "<Leader>", buffer = bufnr })
-        end,
-        hover_actions = {
-          auto_focus = true,
+    "mrcjkb/rustaceanvim",
+    version = "^5",
+    lazy = false,
+    config = function()
+      vim.g.rustaceanvim = {
+        server = {
+          on_attach = function(_, bufnr)
+            local wk = require "which-key"
+            wk.add {
+              { "<Leader>h", buffer = bufnr, desc = "Rust commands" },
+              { "<Leader>hR", function() vim.cmd.RustLsp "runnables" end, buffer = bufnr, desc = "Select runnable" },
+              { "<Leader>ha", function() vim.cmd.RustLsp "codeAction" end, buffer = bufnr, desc = "Code Actions" },
+              { "<Leader>hc", function() vim.cmd.RustLsp "openCargo" end, buffer = bufnr, desc = "Open Cargo.toml" },
+              {
+                "<Leader>hh",
+                function() vim.cmd.RustLsp { "hover", "actions" } end,
+                buffer = bufnr,
+                desc = "Hover Actions",
+              },
+              { "<Leader>hr", function() vim.cmd.RustLsp "runnables" end, buffer = bufnr, desc = "Run" },
+            }
+          end,
+          hover_actions = {
+            auto_focus = true,
+          },
         },
-      },
-    },
-    ft = { "rust" },
+      }
+    end,
   },
   -- {
   --   "mrcjkb/haskell-tools.nvim",
@@ -246,17 +252,6 @@ return {
 
   -- You can disable default plugins as follows:
   { "max397574/better-escape.nvim", enabled = false },
-
-  -- You can also easily customize additional setup of plugins that is outside of the plugin's setup call
-  -- {
-  --   "L3MON4D3/LuaSnip",
-  --   config = function(plugin, opts)
-  --     require "astronvim.plugins.configs.luasnip"(plugin, opts) -- include the default astronvim config that calls the setup call
-  --     -- add more custom luasnip configuration such as filetype extend or custom snippets
-  --     local luasnip = require "luasnip"
-  --     luasnip.filetype_extend("javascript", { "javascriptreact" })
-  --   end,
-  -- },
 
   {
     "windwp/nvim-autopairs",
