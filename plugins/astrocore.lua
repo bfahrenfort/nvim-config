@@ -104,6 +104,7 @@ return {
         shellcmdflag = "-c",
       },
       g = {
+        suda_smart_edit = 1, -- Open root files auto-root
         vimtex_view_general_viewer = "okular",
         vimtex_view_general_options = "--unique file:@pdf#src:@line@tex",
         haskell_tools = {
