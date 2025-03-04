@@ -41,4 +41,13 @@ return {
       }
     end,
   },
+
+  {
+    "oil.nvim",
+    opts = {
+      keymaps = {
+        ["q"] = { "actions.close", mode = "n" },
+      },
+    },
+  },
 }

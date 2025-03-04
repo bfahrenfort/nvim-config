@@ -20,6 +20,9 @@ return {
         ["<C-f>"] = false,
         ["<Leader>h"] = false,
 
+        -- Oil over Neotree
+        ["<Leader>e"] = { require("oil").toggle_float },
+
         -- Groups
         ["<Leader>T"] = { desc = "Coding Commands" },
         -- ["<Leader>h"] = { false, desc = "Language Commands" },

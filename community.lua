@@ -8,4 +8,5 @@ return {
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.haskell" },
   { import = "astrocommunity.colorscheme.catppuccin" },
+  { import = "astrocommunity.file-explorer.oil-nvim" },
 }
